@@ -1,19 +1,33 @@
-# Build stage
-FROM debian:bookworm-slim AS build
+# Use OpenJDK 21 as base image
+FROM openjdk:21-jdk-slim as builder
 
-# Install Maven and required tools
-RUN apt-get update -y && \
-    apt-get install -y maven docker.io && \
-    apt-get clean all
+# Set working directory
+WORKDIR /app
 
-WORKDIR /usr/src/app
+# Copy Maven wrapper and pom.xml
+COPY mvnw mvnw.cmd pom.xml ./
+COPY .mvn .mvn
 
-# Copy pom.xml and download dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# Download dependencies (cache layer)
+RUN ./mvnw dependency:go-offline -B
 
 # Copy source code
-COPY . .
+COPY src ./src
 
-# Build the native image using buildpacks
-RUN mvn -DskipTests spring-boot:build-image
+# Build the application
+RUN ./mvnw clean package -DskipTests
+
+# Runtime stage
+FROM openjdk:21-jre-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the built JAR from builder stage
+COPY --from=builder /app/target/functions-example-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose port (Spring Boot default)
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]

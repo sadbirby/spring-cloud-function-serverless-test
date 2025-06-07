@@ -61,21 +61,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <image>
-                        <!-- ... -->
-                        <buildpacks>
-                            <buildpack>docker.io/paketobuildpacks/oracle</buildpack>
-                            <buildpack>urn:cnb:builder:paketo-buildpacks/java-native-image</buildpack>
-                        </buildpacks>
-                    </image>
-                </configuration>
             </plugin>
         </plugins>
     </build>

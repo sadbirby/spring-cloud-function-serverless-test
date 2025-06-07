@@ -1,5 +1,6 @@
 package io.github.sadbirby.functions_example;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Configuration
+@RegisterReflectionForBinding(CloudFunctions.class)
 public class CloudFunctions {
     @Bean
     public Function<Data, Boolean> createData() {
